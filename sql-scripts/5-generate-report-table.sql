@@ -1,24 +1,24 @@
 use reports;
 
-# remove extra days from 2017
 
-
-
-CREATE OR REPLACE VIEW daily_revenue2 as
-SELECT year, day
-FROM daily_revenue
-WHERE day <=
-    (SELECT max(day)
-    FROM daily_revenue
-    WHERE year = 2018
-    );
-
-create or replace view weekly_revenue2 as
-SELECT year, (floor(day / 7)+1) as week,
-       sum(data_cost) as data_cost,
-       sum(other_cost) as other_cost,
-       sum(net_revenue) as net_revenue,
-       sum(data_cost) + sum(other_cost) + sum(net_revenue) as gross_revenue
-FROM daily_revenue
-GROUP BY year, week;
-
+# final report output
+SELECT  r18.year as `current year`,
+       r18.week as week,
+       r18.gross_revenue as `gross revenue`,
+       r18.net_revenue as `net revenue`,
+       r18.margin as margin,
+       r18.week_over_week_gross as `week/week gross`,
+       r18.week_over_week_net as `week/week net`,
+       r18.year_over_year_gross as `year/year gross`,
+       r18.year_over_year_net as `year/year net`,
+       ' ' as '---------',
+       r17.year as `previous year`,
+       r17.week as week,
+       r17.gross_revenue as `gross revenue`,
+       r17.net_revenue as `net revenue`,
+       r17.margin as margin,
+       r17.week_over_week_gross as `week/week gross`,
+       r17.week_over_week_net as `week/week net`
+FROM report_2018 as r18
+LEFT JOIN report_2017 as r17
+ON r17.week = r18.week;
